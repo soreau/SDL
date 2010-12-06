@@ -1095,6 +1095,19 @@ CheckWarnAll()
 }
 
 
+dnl Find wayland stuff
+CheckWayland()
+{
+        AC_ARG_ENABLE(video-wayland,
+AC_HELP_STRING([--enable-video-wayland], [use Wayland video driver [[default=yes]]]),
+                  , enable_video_wayland=yes)
+        if test x$enable_video = xyes -a x$enable_video_wayland = xyes; then          
+            AC_DEFINE(SDL_VIDEO_DRIVER_WAYLAND)
+            SOURCES="$SOURCES $srcdir/src/video/wayland/*.c"
+            EXTRA_LDFLAGS="$EXTRA_LDFLAGS -L/home/joel/install/lib -lwayland-client -ldrm -lEGL -lcairo"
+        fi
+}
+
 dnl Find the X11 include and library directories
 CheckX11()
 {
@@ -2356,6 +2369,7 @@ case "$host" in
         CheckNAS
         CheckSNDIO
         CheckX11
+        CheckWayland
         CheckDirectFB
         CheckFusionSound
         CheckOpenGLX11
