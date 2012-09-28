@@ -617,6 +617,7 @@ CommonInit(CommonState * state)
         }
 
         if (state->verbose & VERBOSE_MODES) {
+            SDL_Rect bounds;
             SDL_DisplayMode mode;
             int bpp;
             Uint32 Rmask, Gmask, Bmask, Amask;
@@ -625,6 +626,10 @@ CommonInit(CommonState * state)
             fprintf(stderr, "Number of displays: %d\n", n);
             for (i = 0; i < n; ++i) {
                 fprintf(stderr, "Display %d:\n", i);
+
+                SDL_zero(bounds);
+                SDL_GetDisplayBounds(i, &bounds);
+                fprintf(stderr, "Bounds: %dx%d at %d,%d\n", bounds.w, bounds.h, bounds.x, bounds.y);
 
                 SDL_GetDesktopDisplayMode(i, &mode);
                 SDL_PixelFormatEnumToMasks(mode.format, &bpp, &Rmask, &Gmask,
@@ -736,7 +741,8 @@ CommonInit(CommonState * state)
                 return SDL_FALSE;
             }
             SDL_GetWindowSize(state->windows[i], &w, &h);
-            if (w != state->window_w || h != state->window_h) {
+            if (!(state->window_flags & SDL_WINDOW_RESIZABLE) &&
+                (w != state->window_w || h != state->window_h)) {
                 printf("Window requested size %dx%d, got %dx%d\n", state->window_w, state->window_h, w, h);
                 state->window_w = w;
                 state->window_h = h;
