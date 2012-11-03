@@ -35,6 +35,7 @@ struct SDL_WaylandInput;
 
 typedef struct {
     struct wl_display *display;
+    struct wl_registry *registry;
     struct wl_compositor *compositor;
     struct wl_output *output;
     struct wl_shell *shell;
@@ -49,18 +50,12 @@ typedef struct {
 
     struct xkb_context *xkb_context;
     struct SDL_WaylandInput *input;
-
-    int event_fd;
-    int event_mask;
-
-    int schedule_write;
 } SDL_WaylandData;
 
 static inline void
 wayland_schedule_write(SDL_WaylandData *data)
 {
-    if (data->schedule_write)
-        wl_display_iterate(data->display, WL_DISPLAY_WRITABLE);
+    wl_display_flush(data->display);
 }
 
 #endif /* _SDL_nullvideo_h */
