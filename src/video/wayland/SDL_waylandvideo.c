@@ -145,37 +145,26 @@ static const struct wl_output_listener output_listener = {
 };
 
 static void
-display_handle_global(struct wl_display *display, uint32_t id,
-                      const char *interface, uint32_t version, void *data)
+display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
+					const char *interface, uint32_t version)
 {
     SDL_WaylandData *d = data;
 
     if (strcmp(interface, "wl_compositor") == 0) {
-        d->compositor = wl_display_bind(display, id, &wl_compositor_interface);
+        d->compositor = wl_registry_bind(d->registry, id, &wl_compositor_interface, 1);
     } else if (strcmp(interface, "wl_output") == 0) {
-        d->output = wl_display_bind(display, id, &wl_output_interface);
+        d->output = wl_registry_bind(d->registry, id, &wl_output_interface, 1);
         wl_output_add_listener(d->output, &output_listener, d);
     } else if (strcmp(interface, "wl_seat") == 0) {
         Wayland_display_add_input(d, id);
     } else if (strcmp(interface, "wl_shell") == 0) {
-        d->shell = wl_display_bind(display, id, &wl_shell_interface);
+        d->shell = wl_registry_bind(d->registry, id, &wl_shell_interface, 1);
     }
 }
 
-static int
-update_event_mask(uint32_t mask, void *data)
-{
-    SDL_WaylandData *d = data;
-
-    d->event_mask = mask;
-
-    if (mask & WL_DISPLAY_WRITABLE)
-        d->schedule_write = 1;
-    else
-        d->schedule_write = 0;
-
-    return 0;
-}
+static const struct wl_registry_listener registry_listener = {
+	display_handle_global
+};
 
 int
 Wayland_VideoInit(_THIS)
@@ -195,12 +184,12 @@ Wayland_VideoInit(_THIS)
         return 0;
     }
 
-    wl_display_add_global_listener(data->display,
-                                   display_handle_global, data);
+    data->registry = wl_display_get_registry(data->display);
+    wl_registry_add_listener(data->registry, &registry_listener, data);
 
-    wl_display_iterate(data->display, WL_DISPLAY_READABLE);
+    wl_display_dispatch(data->display);
 
-    data->event_fd = wl_display_get_fd(data->display, update_event_mask, data);
+    wl_display_get_fd(data->display);
 
     data->xkb_context = xkb_context_new(0);
     if (!data->xkb_context) {

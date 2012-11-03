@@ -58,27 +58,8 @@ void
 Wayland_PumpEvents(_THIS)
 {
     SDL_WaylandData *d = _this->driverdata;
-    struct timeval tv;
-    fd_set rfds;
-    int retval;
 
-    if (!(d->event_mask & WL_DISPLAY_READABLE))
-        return;
-
-    tv.tv_sec  = 0;
-    tv.tv_usec = 0;
-    do {
-        FD_ZERO(&rfds);
-        FD_SET(d->event_fd, &rfds);
-
-        retval = select(d->event_fd + 1, &rfds, NULL, NULL, &tv);
-        if (retval < 0) {
-            SDL_SetError("select failed: %m");
-            break;
-        }
-        if (retval == 1)
-            wl_display_iterate(d->display, WL_DISPLAY_READABLE);
-    } while (retval > 0);
+    wl_display_dispatch_pending(d->display);
 }
 
 static void
@@ -352,7 +333,7 @@ Wayland_display_add_input(SDL_WaylandData *d, uint32_t id)
 
     memset(input, 0, sizeof *input);
     input->display = d;
-    input->seat = wl_display_bind(d->display, id, &wl_seat_interface);
+    input->seat = wl_registry_bind(d->registry, id, &wl_seat_interface, 1);
 
     d->input = input;
 
