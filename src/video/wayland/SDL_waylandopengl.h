@@ -1,6 +1,8 @@
 /*
     SDL - Simple DirectMedia Layer
     Copyright (C) 1997-2010 Sam Lantinga
+    Copyright (C) 2010 Joel Teichroeb <joel@teichroeb.net>
+    Copyright (C) 2010-2012 Benjamin Franzke <benjaminfranzke@googlemail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
