@@ -191,8 +191,6 @@ Wayland_VideoInit(_THIS)
 
     wl_display_dispatch(data->display);
 
-    wl_display_get_fd(data->display);
-
     data->xkb_context = xkb_context_new(0);
     if (!data->xkb_context) {
         SDL_SetError("Failed to create XKB context");
