@@ -81,7 +81,7 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
 
     if (!(window->flags & SDL_WINDOW_OPENGL)) {
         SDL_GL_LoadLibrary(NULL);
-        window->flags &= SDL_WINDOW_OPENGL;
+        window->flags |= SDL_WINDOW_OPENGL;
     }
 
     if (window->x == SDL_WINDOWPOS_UNDEFINED) {
