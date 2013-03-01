@@ -138,10 +138,17 @@ int
 Wayland_GL_MakeCurrent(_THIS, SDL_Window *window, SDL_GLContext context)
 {
     SDL_WaylandData *data = _this->driverdata;
-    SDL_WaylandWindow *wind = window->driverdata;
+    SDL_WaylandWindow *wind;
+    EGLSurface *surf = NULL;
+    EGLContext *ctx = NULL;
 
-    if (!eglMakeCurrent(data->edpy, wind->esurf, wind->esurf,
-                        data->context)) {
+    if (window) {
+        wind = window->driverdata;
+        surf = wind->esurf;
+        ctx = data->context;
+    }
+
+    if (!eglMakeCurrent(data->edpy, surf, surf, ctx)) {
         SDL_SetError("Unable to make EGL context current");
         return -1;
     }
