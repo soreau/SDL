@@ -28,6 +28,7 @@
 #define _SDL_waylandwindow_h
 
 #include "../SDL_sysvideo.h"
+#include "SDL_syswm.h"
 
 #include "SDL_waylandvideo.h"
 
@@ -47,6 +48,9 @@ typedef struct {
 extern void Wayland_ShowWindow(_THIS, SDL_Window *window);
 extern int Wayland_CreateWindow(_THIS, SDL_Window *window);
 extern void Wayland_DestroyWindow(_THIS, SDL_Window *window);
+
+extern SDL_bool
+Wayland_GetWindowWMInfo(_THIS, SDL_Window * window, SDL_SysWMinfo * info);
 
 #endif /* _SDL_waylandwindow_h */
 
