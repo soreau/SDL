@@ -57,6 +57,16 @@ struct SDL_WaylandInput {
     } xkb;
 };
 
+struct wl_pointer *
+Wayland_Input_GetPointer(SDL_WaylandData *data)
+{
+    if (data->input &&
+        data->input->pointer)
+        return data->input->pointer;
+
+    return NULL;
+}
+
 void
 Wayland_PumpEvents(_THIS)
 {
