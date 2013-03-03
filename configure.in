@@ -1014,6 +1014,36 @@ CheckWarnAll()
     fi
 }
 
+dnl Check for Wayland
+CheckWayland()
+{
+    AC_ARG_ENABLE(video-wayland,
+AC_HELP_STRING([--enable-video-wayland], [use Wayland video driver [[default=yes]]]),
+                  ,enable_video_wayland=yes)
+    if test x$enable_video = xyes -a x$enable_video_wayland = xyes; then
+        AC_MSG_CHECKING(for Wayland support)
+        video_wayland=no
+        AC_TRY_COMPILE([
+         #include <EGL/egl.h>
+         #include <xkbcommon/xkbcommon.h>
+         #include <wayland-client.h>
+         #include <wayland-client-protocol.h>
+         #include <wayland-cursor.h>
+         #include <wayland-egl.h>
+        ],[
+        ],[
+        video_wayland=yes
+        ])
+        AC_MSG_RESULT($video_wayland)
+        if test x$video_wayland = xyes; then
+            AC_DEFINE(SDL_VIDEO_DRIVER_WAYLAND)
+            SOURCES="$SOURCES $srcdir/src/video/wayland/*.c"
+            EXTRA_CFLAGS="$EXTRA_CFLAGS $(pkg-config --cflags wayland-client wayland-egl wayland-cursor egl xkbcommon)"
+            EXTRA_LDFLAGS="$EXTRA_LDFLAGS $(pkg-config --libs wayland-client wayland-egl wayland-cursor egl xkbcommon)"
+            have_video=yes
+        fi
+    fi
+}
 
 dnl Find the X11 include and library directories
 CheckX11()
@@ -2227,6 +2257,7 @@ case "$host" in
         CheckESD
         CheckNAS
         CheckX11
+        CheckWayland
         CheckDirectFB
         CheckFusionSound
         CheckOpenGLX11
