@@ -54,12 +54,36 @@ struct SDL_WaylandInput {
     } xkb;
 };
 
+struct wl_pointer *
+Wayland_Input_GetPointer(SDL_WaylandData *data)
+{
+    if (data->input &&
+        data->input->pointer)
+        return data->input->pointer;
+
+    return NULL;
+}
+
 void
 Wayland_PumpEvents(_THIS)
 {
     SDL_WaylandData *d = _this->driverdata;
 
+    /* Dispatch any queued events */
+    wl_display_flush(d->display);
     wl_display_dispatch_pending(d->display);
+
+    /* See if there are any more to be read */
+    struct pollfd pfd;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
+    pfd.fd = wl_display_get_fd(d->display);
+
+    poll (&pfd, 1, 1);
+
+    /* If there are, read and dispatch them */
+    if (pfd.revents == POLLIN)
+        wl_display_dispatch(d->display);
 }
 
 static void

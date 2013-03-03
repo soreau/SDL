@@ -26,6 +26,7 @@
 #define _SDL_waylandvideo_h
 
 #include <wayland-client.h>
+#include <wayland-cursor.h>
 #include <wayland-egl.h>
 
 #include <EGL/egl.h>
@@ -38,6 +39,10 @@ typedef struct {
     struct wl_registry *registry;
     struct wl_compositor *compositor;
     struct wl_output *output;
+    struct wl_shm *shm;
+    struct wl_cursor_theme *cursor_theme;
+    struct wl_cursor *default_cursor;
+    struct wl_pointer *pointer;
     struct wl_shell *shell;
 
     struct {
@@ -50,6 +55,8 @@ typedef struct {
 
     struct xkb_context *xkb_context;
     struct SDL_WaylandInput *input;
+
+    uint32_t shm_formats;
 } SDL_WaylandData;
 
 static inline void

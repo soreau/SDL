@@ -21,22 +21,12 @@
 */
 
 #include "SDL_config.h"
-
-#ifndef _SDL_waylandevents_h
-#define _SDL_waylandevents_h
-
+#include "SDL_mouse.h"
 #include "SDL_waylandvideo.h"
-#include "SDL_waylandwindow.h"
 
-extern void Wayland_PumpEvents(_THIS);
+#if SDL_VIDEO_DRIVER_WAYLAND
 
-extern void Wayland_display_add_input(SDL_WaylandData *d, uint32_t id);
-extern void Wayland_display_destroy_input(SDL_WaylandData *d);
+extern void Wayland_InitMouse(void);
+extern void Wayland_FiniMouse(void);
 
-struct wl_pointer;
-
-extern struct wl_pointer * Wayland_Input_GetPointer(SDL_WaylandData *d);
-
-#endif /* _SDL_waylandevents_h */
-
-/* vi: set ts=4 sw=4 expandtab: */
+#endif
