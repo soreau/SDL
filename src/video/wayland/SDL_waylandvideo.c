@@ -1,6 +1,8 @@
 /*
     SDL - Simple DirectMedia Layer
     Copyright (C) 1997-2010 Sam Lantinga
+    Copyright (C) 2010 Joel Teichroeb <joel@teichroeb.net>
+    Copyright (C) 2010-2012 Benjamin Franzke <benjaminfranzke@googlemail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -208,8 +210,6 @@ Wayland_VideoInit(_THIS)
     wl_registry_add_listener(data->registry, &registry_listener, data);
 
     wl_display_dispatch(data->display);
-
-    wl_display_get_fd(data->display);
 
     data->xkb_context = xkb_context_new(0);
     if (!data->xkb_context) {

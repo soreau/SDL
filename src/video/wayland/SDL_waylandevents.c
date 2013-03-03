@@ -1,6 +1,8 @@
 /*
     SDL - Simple DirectMedia Layer
     Copyright (C) 1997-2010 Sam Lantinga
+    Copyright (C) 2010 Joel Teichroeb <joel@teichroeb.net>
+    Copyright (C) 2010-2012 Benjamin Franzke <benjaminfranzke@googlemail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -36,6 +38,7 @@
 #include <linux/input.h>
 #include <sys/select.h>
 #include <sys/mman.h>
+#include <poll.h>
 #include <errno.h>
 #include <unistd.h>
 #include <xkbcommon/xkbcommon.h>
@@ -68,8 +71,16 @@ void
 Wayland_PumpEvents(_THIS)
 {
     SDL_WaylandData *d = _this->driverdata;
+    struct pollfd pfd[1];
 
-    wl_display_dispatch_pending(d->display);
+    pfd[0].fd = wl_display_get_fd(d->display);
+    pfd[0].events = POLLIN;
+    poll(pfd, 1, 0);
+
+    if (pfd[0].revents & POLLIN)
+        wl_display_dispatch(d->display);
+    else
+        wl_display_dispatch_pending(d->display);
 }
 
 static void

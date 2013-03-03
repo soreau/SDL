@@ -1,6 +1,8 @@
 /*
     SDL - Simple DirectMedia Layer
     Copyright (C) 1997-2010 Sam Lantinga
+    Copyright (C) 2010 Joel Teichroeb <joel@teichroeb.net>
+    Copyright (C) 2010-2012 Benjamin Franzke <benjaminfranzke@googlemail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -69,6 +71,7 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
 {
     SDL_WaylandWindow *data;
     SDL_WaylandData *c;
+    struct wl_region *region;
 
     data = malloc(sizeof *data);
     if (data == NULL)
@@ -79,7 +82,7 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
 
     if (!(window->flags & SDL_WINDOW_OPENGL)) {
         SDL_GL_LoadLibrary(NULL);
-        window->flags &= SDL_WINDOW_OPENGL;
+        window->flags |= SDL_WINDOW_OPENGL;
     }
 
     if (window->x == SDL_WINDOWPOS_UNDEFINED) {
@@ -114,6 +117,11 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
         wl_shell_surface_add_listener(data->shell_surface,
                                       &shell_surface_listener, data);
     }
+
+    region = wl_compositor_create_region(c->compositor);
+    wl_region_add(region, 0, 0, window->w, window->h);
+    wl_surface_set_opaque_region(data->surface, region);
+    wl_region_destroy(region);
 
     wayland_schedule_write(c);
 
