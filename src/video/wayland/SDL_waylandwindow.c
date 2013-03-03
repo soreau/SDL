@@ -51,6 +51,19 @@ static const struct wl_shell_surface_listener shell_surface_listener = {
     handle_popup_done
 };
 
+SDL_bool
+Wayland_GetWindowWMInfo(_THIS, SDL_Window * window, SDL_SysWMinfo * info)
+{
+    SDL_WaylandWindow *data = (SDL_WaylandWindow *) window->driverdata;
+
+    info->info.wl.display = data->waylandData->display;
+    info->info.wl.surface = data->surface;
+    info->info.wl.shell_surface = data->shell_surface;
+    info->subsystem = SDL_SYSWM_WAYLAND;
+
+    return SDL_TRUE;
+}
+
 void Wayland_ShowWindow(_THIS, SDL_Window *window)
 {
     SDL_WaylandWindow *wind = window->driverdata;
