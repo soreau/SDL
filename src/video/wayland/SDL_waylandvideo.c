@@ -95,6 +95,8 @@ Wayland_CreateDevice(int devindex)
 
     device->CreateWindow = Wayland_CreateWindow;
     device->ShowWindow = Wayland_ShowWindow;
+    device->SetWindowFullscreen = Wayland_SetWindowFullscreen;
+    device->SetWindowSize = Wayland_SetWindowSize;
     device->DestroyWindow = Wayland_DestroyWindow;
 
     device->free = Wayland_DeleteDevice;
@@ -189,7 +191,8 @@ Wayland_VideoInit(_THIS)
     data->registry = wl_display_get_registry(data->display);
     wl_registry_add_listener(data->registry, &registry_listener, data);
 
-    wl_display_dispatch(data->display);
+    while (data->screen_allocation.width == 0)
+        wl_display_dispatch(data->display);
 
     data->xkb_context = xkb_context_new(0);
     if (!data->xkb_context) {

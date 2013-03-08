@@ -67,6 +67,22 @@ void Wayland_ShowWindow(_THIS, SDL_Window *window)
     wayland_schedule_write(_this->driverdata);
 }
 
+void
+Wayland_SetWindowFullscreen(_THIS, SDL_Window * window,
+                            SDL_VideoDisplay * _display, SDL_bool fullscreen)
+{
+    SDL_WaylandWindow *wind = window->driverdata;
+
+    if (fullscreen)
+        wl_shell_surface_set_fullscreen(wind->shell_surface,
+                                        WL_SHELL_SURFACE_FULLSCREEN_METHOD_SCALE,
+                                        0, NULL);
+    else
+        wl_shell_surface_set_toplevel(wind->shell_surface);
+
+    wayland_schedule_write(_this->driverdata);
+}
+
 int Wayland_CreateWindow(_THIS, SDL_Window *window)
 {
     SDL_WaylandWindow *data;
@@ -126,6 +142,20 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
     wayland_schedule_write(c);
 
     return 0;
+}
+
+void Wayland_SetWindowSize(_THIS, SDL_Window * window)
+{
+    SDL_WaylandData *data = _this->driverdata;
+    SDL_WaylandWindow *wind = window->driverdata;
+    struct wl_region *region;
+
+    wl_egl_window_resize(wind->egl_window, window->w, window->h, 0, 0);
+
+    region = wl_compositor_create_region(data->compositor);
+    wl_region_add(region, 0, 0, window->w, window->h);
+    wl_surface_set_opaque_region(wind->surface, region);
+    wl_region_destroy(region);
 }
 
 void Wayland_DestroyWindow(_THIS, SDL_Window *window)
