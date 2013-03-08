@@ -212,7 +212,8 @@ Wayland_VideoInit(_THIS)
     data->registry = wl_display_get_registry(data->display);
     wl_registry_add_listener(data->registry, &registry_listener, data);
 
-    wl_display_dispatch(data->display);
+    while (data->screen_allocation.width == 0)
+        wl_display_dispatch(data->display);
 
     data->xkb_context = xkb_context_new(0);
     if (!data->xkb_context) {
