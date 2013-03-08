@@ -144,6 +144,20 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
     return 0;
 }
 
+void Wayland_SetWindowSize(_THIS, SDL_Window * window)
+{
+    SDL_WaylandData *data = _this->driverdata;
+    SDL_WaylandWindow *wind = window->driverdata;
+    struct wl_region *region;
+
+    wl_egl_window_resize(wind->egl_window, window->w, window->h, 0, 0);
+
+    region = wl_compositor_create_region(data->compositor);
+    wl_region_add(region, 0, 0, window->w, window->h);
+    wl_surface_set_opaque_region(wind->surface, region);
+    wl_region_destroy(region);
+}
+
 void Wayland_DestroyWindow(_THIS, SDL_Window *window)
 {
     SDL_WaylandData *data = _this->driverdata;
