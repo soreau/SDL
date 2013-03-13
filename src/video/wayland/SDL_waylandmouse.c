@@ -25,21 +25,21 @@
 #define _GNU_SOURCE
 #endif
 
+#include "../SDL_sysvideo.h"
+
+#include "SDL_assert.h"
+#include "SDL_config.h"
+#include "SDL_mouse.h"
+#include "../../events/SDL_mouse_c.h"
+#include "SDL_waylandvideo.h"
+#include "SDL_waylandevents_c.h"
+
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
-
-#include "SDL_assert.h"
-#include "../SDL_sysvideo.h"
-
-#include "SDL_config.h"
-#include "SDL_mouse.h"
-#include "../../events/SDL_mouse_c.h"
-#include "SDL_waylandvideo.h"
-#include "SDL_waylandevents_c.h"
 
 #if SDL_VIDEO_DRIVER_WAYLAND
 
@@ -358,11 +358,11 @@ Wayland_FreeCursor(SDL_Cursor *cursor)
 
 static void
 Wayland_ShowCursor(SDL_Cursor *cursor)
-{
+{return;
     SDL_VideoDevice *vd = SDL_GetVideoDevice();
     SDL_WaylandData *d = vd->driverdata;
 
-    struct wl_pointer *pointer = Wayland_Input_GetPointer(d);
+    struct wl_pointer *pointer = d->pointer;
 
     if (!pointer)
         return;

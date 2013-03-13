@@ -1,5 +1,6 @@
 syntax:glob
 .svn
+configure.in
 autom4te*
 config.cache
 config.log
