@@ -63,14 +63,19 @@ Wayland_PumpEvents(_THIS)
     SDL_WaylandData *d = _this->driverdata;
     struct pollfd pfd[1];
 
+    /* Flush and dispatch pending first, as it
+     * could cause the compositor to write
+     * more events to us */
+    wl_display_dispatch_pending(d->display);
+    wl_display_flush(d->display);
+
+    /* See if there are any more to be read */
     pfd[0].fd = wl_display_get_fd(d->display);
     pfd[0].events = POLLIN;
     poll(pfd, 1, 0);
 
     if (pfd[0].revents & POLLIN)
         wl_display_dispatch(d->display);
-    else
-        wl_display_dispatch_pending(d->display);
 }
 
 static void
