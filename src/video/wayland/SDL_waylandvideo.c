@@ -81,6 +81,7 @@ Wayland_CreateDevice(int devindex)
     device->VideoQuit = Wayland_VideoQuit;
     device->SetDisplayMode = Wayland_SetDisplayMode;
     device->GetDisplayModes = Wayland_GetDisplayModes;
+    device->GetWindowWMInfo = Wayland_GetWindowWMInfo;
 
     device->PumpEvents = Wayland_PumpEvents;
 
