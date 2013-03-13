@@ -31,6 +31,7 @@
 #include "SDL_waylandevents_c.h"
 #include "SDL_waylandwindow.h"
 #include "SDL_waylandopengl.h"
+#include "SDL_waylandmouse.h"
 
 #include <fcntl.h>
 #include <xkbcommon/xkbcommon.h>
@@ -149,6 +150,20 @@ static const struct wl_output_listener output_listener = {
 };
 
 static void
+shm_handle_format(void *data,
+                  struct wl_shm *shm,
+                  uint32_t format)
+{
+    SDL_WaylandData *d = data;
+
+    d->shm_formats |= (1 << format);
+}
+
+static const struct wl_shm_listener shm_listener = {
+    shm_handle_format
+};
+
+static void
 display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
 					const char *interface, uint32_t version)
 {
@@ -163,6 +178,11 @@ display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
         Wayland_display_add_input(d, id);
     } else if (strcmp(interface, "wl_shell") == 0) {
         d->shell = wl_registry_bind(d->registry, id, &wl_shell_interface, 1);
+    } else if (strcmp(interface, "wl_shm") == 0) {
+        d->shm = wl_registry_bind(registry, id, &wl_shm_interface, 1);
+        d->cursor_theme = wl_cursor_theme_load(NULL, 32, d->shm);
+        d->default_cursor = wl_cursor_theme_get_cursor(d->cursor_theme, "left_ptr");
+        wl_shm_add_listener(d->shm, &shm_listener, d);
     }
 }
 
@@ -215,6 +235,8 @@ Wayland_VideoInit(_THIS)
     display.driverdata = NULL;
     SDL_AddVideoDisplay(&display);
 
+    Wayland_InitMouse ();
+
     wayland_schedule_write(data);
 
     return 0;
@@ -250,6 +272,8 @@ Wayland_VideoQuit(_THIS)
 {
     SDL_WaylandData *data = _this->driverdata;
 
+    Wayland_FiniMouse ();
+
     if (data->output);
         wl_output_destroy(data->output);
 
@@ -259,6 +283,12 @@ Wayland_VideoQuit(_THIS)
         xkb_context_unref(data->xkb_context);
         data->xkb_context = NULL;
     }
+
+    if (data->shm)
+        wl_shm_destroy(data->shm);
+
+    if (data->cursor_theme)
+        wl_cursor_theme_destroy(data->cursor_theme);
 
     if (data->shell)
         wl_shell_destroy(data->shell);

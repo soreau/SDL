@@ -1028,6 +1028,7 @@ AC_HELP_STRING([--enable-video-wayland], [use Wayland video driver [[default=yes
          #include <xkbcommon/xkbcommon.h>
          #include <wayland-client.h>
          #include <wayland-client-protocol.h>
+         #include <wayland-cursor.h>
          #include <wayland-egl.h>
         ],[
         ],[
@@ -1037,8 +1038,8 @@ AC_HELP_STRING([--enable-video-wayland], [use Wayland video driver [[default=yes
         if test x$video_wayland = xyes; then
             AC_DEFINE(SDL_VIDEO_DRIVER_WAYLAND)
             SOURCES="$SOURCES $srcdir/src/video/wayland/*.c"
-            EXTRA_CFLAGS="$EXTRA_CFLAGS $(pkg-config --cflags wayland-client wayland-egl egl xkbcommon)"
-            EXTRA_LDFLAGS="$EXTRA_LDFLAGS $(pkg-config --libs wayland-client wayland-egl egl xkbcommon)"
+            EXTRA_CFLAGS="$EXTRA_CFLAGS $(pkg-config --cflags wayland-client wayland-egl wayland-cursor egl xkbcommon)"
+            EXTRA_LDFLAGS="$EXTRA_LDFLAGS $(pkg-config --libs wayland-client wayland-egl wayland-cursor egl xkbcommon)"
             have_video=yes
         fi
     fi
