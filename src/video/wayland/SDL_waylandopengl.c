@@ -136,7 +136,7 @@ Wayland_GL_CreateContext(_THIS, SDL_Window *window)
     const EGLint *attribs = NULL;
     int    client_version = 0;
 
-#if SDL_VIDEO_RENDER_OGL_ES2 
+#if SDL_VIDEO_RENDER_OGL_ES2
     client_version = 2;
 #elif SDL_VIDEO_RENDER_OGL_ES
     client_version = 1;

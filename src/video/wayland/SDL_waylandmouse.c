@@ -48,7 +48,7 @@ typedef struct {
     struct wl_surface  *surface;
 
     int                hot_x, hot_y;
-    
+
     /* Either a preloaded cursor, or one we created ourselves */
     struct wl_cursor   *cursor;
     void               *shm_data;
@@ -427,7 +427,7 @@ Wayland_FiniMouse(void)
      * the default cursor */
     if (mouse->def_cursor != mouse->cur_cursor)
         Wayland_FreeCursor (mouse->cur_cursor);
-    
+
     Wayland_FreeCursor (mouse->def_cursor);
     mouse->def_cursor = NULL;
     mouse->cur_cursor = NULL;
