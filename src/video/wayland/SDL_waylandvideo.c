@@ -275,7 +275,7 @@ Wayland_VideoQuit(_THIS)
 
     Wayland_FiniMouse ();
 
-    if (data->output);
+    if (data->output)
         wl_output_destroy(data->output);
 
     Wayland_display_destroy_input(data);
@@ -297,8 +297,10 @@ Wayland_VideoQuit(_THIS)
     if (data->compositor)
         wl_compositor_destroy(data->compositor);
 
-    wl_display_flush(data->display);
-	wl_display_disconnect(data->display);
+    if (data->display) {
+        wl_display_flush(data->display);
+        wl_display_disconnect(data->display);
+    }
 
     free(data);
     _this->driverdata = NULL;
