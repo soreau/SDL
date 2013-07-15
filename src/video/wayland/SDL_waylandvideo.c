@@ -26,6 +26,7 @@
 
 #include "SDL_video.h"
 #include "SDL_mouse.h"
+#include "../../events/SDL_events_c.h"
 
 #include "SDL_waylandvideo.h"
 #include "SDL_waylandevents_c.h"
@@ -166,6 +167,23 @@ static const struct wl_shm_listener shm_listener = {
 };
 
 static void
+windowmanager_hints(void *data, struct qt_windowmanager *qt_windowmanager,
+        int32_t show_is_fullscreen)
+{
+}
+
+static void
+windowmanager_quit(void *data, struct qt_windowmanager *qt_windowmanager)
+{
+    SDL_SendQuit();
+}
+
+static const struct qt_windowmanager_listener windowmanager_listener = {
+    windowmanager_hints,
+    windowmanager_quit,
+};
+
+static void
 display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
 					const char *interface, uint32_t version)
 {
@@ -190,6 +208,10 @@ display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
     } else if (strcmp(interface, "qt_surface_extension") == 0) {
         d->surface_extension = wl_registry_bind(registry, id,
                 &qt_surface_extension_interface, 1);
+    } else if (strcmp(interface, "qt_windowmanager") == 0) {
+        d->windowmanager = wl_registry_bind(registry, id,
+                &qt_windowmanager_interface, 1);
+        qt_windowmanager_add_listener(d->windowmanager, &windowmanager_listener, d);
     }
 }
 
@@ -290,6 +312,9 @@ Wayland_VideoQuit(_THIS)
         xkb_context_unref(data->xkb_context);
         data->xkb_context = NULL;
     }
+
+    if (data->windowmanager)
+        qt_windowmanager_destroy(data->windowmanager);
 
     if (data->surface_extension)
         qt_surface_extension_destroy(data->surface_extension);
