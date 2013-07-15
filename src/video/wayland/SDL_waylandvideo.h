@@ -35,6 +35,7 @@
 
 struct xkb_context;
 struct SDL_WaylandInput;
+struct SDL_WaylandTouch;
 
 typedef struct {
     struct wl_display *display;
@@ -57,6 +58,7 @@ typedef struct {
 
     struct xkb_context *xkb_context;
     struct SDL_WaylandInput *input;
+    struct SDL_WaylandTouch *touch;
 
     uint32_t shm_formats;
 } SDL_WaylandData;
