@@ -32,6 +32,7 @@
 #include <wayland-egl.h>
 
 #include "wayland-qt-surface-extension.h"
+#include "wayland-qt-windowmanager.h"
 
 #include <EGL/egl.h>
 
@@ -62,6 +63,7 @@ typedef struct {
     struct SDL_WaylandInput *input;
     struct SDL_WaylandTouch *touch;
     struct qt_surface_extension *surface_extension;
+    struct qt_windowmanager *windowmanager;
 
     uint32_t shm_formats;
 } SDL_WaylandData;
