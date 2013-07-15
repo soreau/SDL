@@ -39,6 +39,7 @@ typedef struct {
     SDL_WaylandData *waylandData;
     struct wl_surface *surface;
     struct wl_shell_surface *shell_surface;
+    struct qt_extended_surface *extended_surface;
     struct wl_egl_window *egl_window;
     EGLSurface esurf;
 
