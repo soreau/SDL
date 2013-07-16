@@ -32,6 +32,7 @@
 #include "SDL_waylandwindow.h"
 #include "SDL_waylandopengl.h"
 #include "SDL_waylandmouse.h"
+#include "SDL_waylandtouch.h"
 
 #include <fcntl.h>
 #include <xkbcommon/xkbcommon.h>
@@ -184,6 +185,8 @@ display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
         d->cursor_theme = wl_cursor_theme_load(NULL, 32, d->shm);
         d->default_cursor = wl_cursor_theme_get_cursor(d->cursor_theme, "left_ptr");
         wl_shm_add_listener(d->shm, &shm_listener, d);
+    } else if (strcmp(interface, "qt_touch_extension") == 0) {
+        Wayland_touch_create(d, id);
     }
 }
 
@@ -284,6 +287,8 @@ Wayland_VideoQuit(_THIS)
         xkb_context_unref(data->xkb_context);
         data->xkb_context = NULL;
     }
+
+    Wayland_touch_destroy(data);
 
     if (data->shm)
         wl_shm_destroy(data->shm);
