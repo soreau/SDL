@@ -9,16 +9,18 @@ The "wayland" video driver now has support for some additional features when
 using QtWayland's "qmlcompositor" as Wayland server. This is needed for touch
 input when running SDL applications under a qmlcompositor Wayland server.
 
-The files src/video/wayland/wayland-qt-touch-extension.{c,h} have been
+The files src/video/wayland/wayland-qt-*-extension.{c,h} have been
 generated from the Wayland XML Protocol Definition in QtWayland as follows:
 
 Clone QtWayland from Git:
     http://qt.gitorious.org/qt/qtwayland/
 
-Generate Touch Extension Source Code:
-    wayland-scanner client-header < src/extensions/touch-extension.xml > wayland-qt-touch-extension.h
-    wayland-scanner code < src/extensions/touch-extension.xml > wayland-qt-touch-extension.c
+Generate headers and glue code:
+    for extension in touch-extension surface-extension; do
+        wayland-scanner client-header < src/extensions/$extension.xml > wayland-qt-$extension.h
+        wayland-scanner code < src/extensions/$extension.xml > wayland-qt-$extension.c
+    done
 
-Copy wayland-qt-touch-extension.h and wayland-qt-touch-extension.c to:
+Copy wayland-qt-*-extension.{c,h} to:
     src/video/wayland/
 

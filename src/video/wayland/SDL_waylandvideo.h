@@ -31,6 +31,8 @@
 #include <wayland-cursor.h>
 #include <wayland-egl.h>
 
+#include "wayland-qt-surface-extension.h"
+
 #include <EGL/egl.h>
 
 struct xkb_context;
@@ -59,6 +61,7 @@ typedef struct {
     struct xkb_context *xkb_context;
     struct SDL_WaylandInput *input;
     struct SDL_WaylandTouch *touch;
+    struct qt_surface_extension *surface_extension;
 
     uint32_t shm_formats;
 } SDL_WaylandData;

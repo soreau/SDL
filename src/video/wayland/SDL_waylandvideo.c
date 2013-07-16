@@ -187,6 +187,9 @@ display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
         wl_shm_add_listener(d->shm, &shm_listener, d);
     } else if (strcmp(interface, "qt_touch_extension") == 0) {
         Wayland_touch_create(d, id);
+    } else if (strcmp(interface, "qt_surface_extension") == 0) {
+        d->surface_extension = wl_registry_bind(registry, id,
+                &qt_surface_extension_interface, 1);
     }
 }
 
@@ -287,6 +290,9 @@ Wayland_VideoQuit(_THIS)
         xkb_context_unref(data->xkb_context);
         data->xkb_context = NULL;
     }
+
+    if (data->surface_extension)
+        qt_surface_extension_destroy(data->surface_extension);
 
     Wayland_touch_destroy(data);
 
