@@ -25,6 +25,7 @@
 #include "SDL_config.h"
 
 #include "../SDL_sysvideo.h"
+#include "../../events/SDL_windowevents_c.h"
 
 #include "SDL_waylandwindow.h"
 #include "SDL_waylandvideo.h"
@@ -51,6 +52,32 @@ static const struct wl_shell_surface_listener shell_surface_listener = {
     handle_ping,
     handle_configure,
     handle_popup_done
+};
+
+static void
+handle_onscreen_visibility(void *data,
+        struct qt_extended_surface *qt_extended_surface, int32_t visible)
+{
+}
+
+static void
+handle_set_generic_property(void *data,
+        struct qt_extended_surface *qt_extended_surface, const char *name,
+        struct wl_array *value)
+{
+}
+
+static void
+handle_close(void *data, struct qt_extended_surface *qt_extended_surface)
+{
+    SDL_WaylandWindow *window = (SDL_WaylandWindow *)data;
+    SDL_SendWindowEvent(window->sdlwindow, SDL_WINDOWEVENT_CLOSE, 0, 0);
+}
+
+static const struct qt_extended_surface_listener extended_surface_listener = {
+    handle_onscreen_visibility,
+    handle_set_generic_property,
+    handle_close,
 };
 
 SDL_bool
@@ -129,6 +156,10 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
     wl_surface_set_user_data(data->surface, data);
     data->shell_surface = wl_shell_get_shell_surface(c->shell,
                                                      data->surface);
+    if (c->surface_extension) {
+        data->extended_surface = qt_surface_extension_get_extended_surface(
+                c->surface_extension, data->surface);
+    }
 
     data->egl_window = wl_egl_window_create(data->surface,
                                             window->w, window->h);
@@ -145,6 +176,12 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
         wl_shell_surface_set_user_data(data->shell_surface, data);
         wl_shell_surface_add_listener(data->shell_surface,
                                       &shell_surface_listener, data);
+    }
+
+    if (data->extended_surface) {
+        qt_extended_surface_set_user_data(data->extended_surface, data);
+        qt_extended_surface_add_listener(data->extended_surface,
+                                         &extended_surface_listener, data);
     }
 
     region = wl_compositor_create_region(c->compositor);
@@ -184,6 +221,9 @@ void Wayland_DestroyWindow(_THIS, SDL_Window *window)
 
         if (wind->shell_surface)
             wl_shell_surface_destroy(wind->shell_surface);
+
+        if (wind->extended_surface)
+            qt_extended_surface_destroy(wind->extended_surface);
 
         wl_surface_destroy(wind->surface);
 
