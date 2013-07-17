@@ -16,7 +16,7 @@ Clone QtWayland from Git:
     http://qt.gitorious.org/qt/qtwayland/
 
 Generate headers and glue code:
-    for extension in touch-extension surface-extension; do
+    for extension in touch-extension surface-extension windowmanager; do
         wayland-scanner client-header < src/extensions/$extension.xml > wayland-qt-$extension.h
         wayland-scanner code < src/extensions/$extension.xml > wayland-qt-$extension.c
     done
