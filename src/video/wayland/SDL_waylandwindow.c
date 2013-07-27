@@ -129,7 +129,7 @@ int Wayland_CreateWindow(_THIS, SDL_Window *window)
     SDL_WaylandData *c;
     struct wl_region *region;
 
-    data = malloc(sizeof *data);
+    data = calloc(1, sizeof *data);
     if (data == NULL)
         return 0;
 
