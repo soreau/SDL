@@ -110,7 +110,7 @@ pointer_handle_motion(void *data, struct wl_pointer *pointer,
     int sx = wl_fixed_to_int(sx_w);
     int sy = wl_fixed_to_int(sy_w);
 
-    SDL_SendMouseMotion(window->sdlwindow, 0, sx, sy);
+    SDL_SendMouseMotion(window->sdlwindow, 0, 0, sx, sy);
 }
 
 static void
@@ -142,7 +142,7 @@ pointer_handle_button(void *data, struct wl_pointer *pointer, uint32_t serial,
         return;
     }
 
-    SDL_SendMouseButton(window->sdlwindow,
+    SDL_SendMouseButton(window->sdlwindow, 0,
                         state ? SDL_PRESSED : SDL_RELEASED, sdl_button);
 }
 
@@ -168,7 +168,7 @@ pointer_handle_axis(void *data, struct wl_pointer *pointer,
         return;
     }
 
-    SDL_SendMouseWheel(window->sdlwindow, x, y);
+    SDL_SendMouseWheel(window->sdlwindow, 0, x, y);
 }
 
 static const struct wl_pointer_listener pointer_listener = {
