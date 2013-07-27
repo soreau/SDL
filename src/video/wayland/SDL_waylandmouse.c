@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "SDL_assert.h"
+
 #include "../SDL_sysvideo.h"
 
 #include "SDL_config.h"
@@ -40,6 +40,8 @@
 #include "../../events/SDL_mouse_c.h"
 #include "SDL_waylandvideo.h"
 #include "SDL_waylandevents_c.h"
+
+#include "SDL_assert.h"
 
 #if SDL_VIDEO_DRIVER_WAYLAND
 
