@@ -345,6 +345,7 @@ Wayland_display_add_input(SDL_WaylandData *d, uint32_t id)
     memset(input, 0, sizeof *input);
     input->display = d;
     input->seat = wl_registry_bind(d->registry, id, &wl_seat_interface, 1);
+    d->seat = input->seat;
 
     d->input = input;
 

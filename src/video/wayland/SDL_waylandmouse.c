@@ -364,7 +364,7 @@ Wayland_ShowCursor(SDL_Cursor *cursor)
     SDL_VideoDevice *vd = SDL_GetVideoDevice();
     SDL_WaylandData *d = vd->driverdata;
 
-    struct wl_pointer *pointer = Wayland_Input_GetPointer(d);
+    struct wl_pointer *pointer = wl_seat_get_pointer(d->seat);
 
     if (!pointer)
         return;
