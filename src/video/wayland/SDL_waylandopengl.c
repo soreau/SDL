@@ -52,7 +52,10 @@ Wayland_GL_LoadLibrary(_THIS, const char *path)
     EGLenum renderable_type = 0;
     EGLenum rendering_api = 0;
 
-#if SDL_VIDEO_RENDER_OGL_ES || SDL_VIDEO_RENDER_OGL_ES2
+#if SDL_VIDEO_RENDER_OGL
+    renderable_type = EGL_OPENGL_BIT;
+    rendering_api = EGL_OPENGL_API;
+#elif SDL_VIDEO_RENDER_OGL_ES || SDL_VIDEO_RENDER_OGL_ES2
     int client_version = 0;
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &client_version);
     if (client_version == 1) {
@@ -61,9 +64,6 @@ Wayland_GL_LoadLibrary(_THIS, const char *path)
         renderable_type = EGL_OPENGL_ES2_BIT;
     }
     rendering_api = EGL_OPENGL_ES_API;
-#elif SDL_VIDEO_RENDER_OGL
-    renderable_type = EGL_OPENGL_BIT;
-    rendering_api = EGL_OPENGL_API;
 #endif
 
     EGLint config_attribs[] = {
@@ -141,6 +141,7 @@ Wayland_GL_CreateContext(_THIS, SDL_Window *window)
 
     SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &client_version);
 
+#ifndef SDL_VIDEO_RENDER_OGL
 #if SDL_VIDEO_RENDER_OGL_ES2 || SDL_VIDEO_RENDER_OGL_ES
     const EGLint context_attribs[] = {
         EGL_CONTEXT_CLIENT_VERSION, client_version,
@@ -149,7 +150,7 @@ Wayland_GL_CreateContext(_THIS, SDL_Window *window)
 
     attribs = context_attribs;
 #endif
-
+#endif
 
     data->context = eglCreateContext(data->edpy, data->econf,
                                      EGL_NO_CONTEXT, attribs);
