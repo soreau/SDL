@@ -408,7 +408,7 @@ Wayland_InitMouse(void)
 
     mouse->CreateCursor = Wayland_CreateCursor;
     mouse->CreateSystemCursor = Wayland_CreateSystemCursor;
-    mouse->ShowCursor = Wayland_ShowCursor;
+//    mouse->ShowCursor = Wayland_ShowCursor;
     mouse->FreeCursor = Wayland_FreeCursor;
     mouse->WarpMouse = Wayland_WarpMouse;
     mouse->SetRelativeMouseMode = Wayland_SetRelativeMouseMode;
