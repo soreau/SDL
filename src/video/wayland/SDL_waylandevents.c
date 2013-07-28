@@ -310,6 +310,7 @@ seat_handle_capabilities(void *data, struct wl_seat *seat,
 
     if ((caps & WL_SEAT_CAPABILITY_POINTER) && !input->pointer) {
         input->pointer = wl_seat_get_pointer(seat);
+        input->display->pointer = input->pointer;
         wl_pointer_set_user_data(input->pointer, input);
         wl_pointer_add_listener(input->pointer, &pointer_listener,
                                 input);
@@ -345,7 +346,6 @@ Wayland_display_add_input(SDL_WaylandData *d, uint32_t id)
     memset(input, 0, sizeof *input);
     input->display = d;
     input->seat = wl_registry_bind(d->registry, id, &wl_seat_interface, 1);
-    d->seat = input->seat;
 
     d->input = input;
 

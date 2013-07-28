@@ -258,6 +258,7 @@ CreateCursorFromWlCursor(SDL_WaylandData *d, struct wl_cursor *wlcursor)
                           0,
                           wlcursor->images[0]->width,
                           wlcursor->images[0]->height);
+        wl_surface_commit(data->surface);
         data->hot_x = wlcursor->images[0]->hotspot_x;
         data->hot_y = wlcursor->images[0]->hotspot_y;
         data->cursor= wlcursor;
@@ -364,7 +365,7 @@ Wayland_ShowCursor(SDL_Cursor *cursor)
     SDL_VideoDevice *vd = SDL_GetVideoDevice();
     SDL_WaylandData *d = vd->driverdata;
 
-    struct wl_pointer *pointer = wl_seat_get_pointer(d->seat);
+    struct wl_pointer *pointer = d->pointer;
 
     if (!pointer)
         return;
@@ -373,14 +374,14 @@ Wayland_ShowCursor(SDL_Cursor *cursor)
     {
         Wayland_CursorData *data = cursor->driverdata;
 
-        wl_pointer_set_cursor (pointer, 0 /* Not sure about this */,
+        wl_pointer_set_cursor (pointer, 0,
                                data->surface,
                                data->hot_x,
                                data->hot_y);
     }
     else
     {
-        wl_pointer_set_cursor (pointer, 0 /* Not sure about this */,
+        wl_pointer_set_cursor (pointer, 0,
                                NULL,
                                0,
                                0);
@@ -408,7 +409,7 @@ Wayland_InitMouse(void)
 
     mouse->CreateCursor = Wayland_CreateCursor;
     mouse->CreateSystemCursor = Wayland_CreateSystemCursor;
-//    mouse->ShowCursor = Wayland_ShowCursor;
+    mouse->ShowCursor = Wayland_ShowCursor;
     mouse->FreeCursor = Wayland_FreeCursor;
     mouse->WarpMouse = Wayland_WarpMouse;
     mouse->SetRelativeMouseMode = Wayland_SetRelativeMouseMode;

@@ -48,7 +48,7 @@ typedef struct {
     struct wl_shm *shm;
     struct wl_cursor_theme *cursor_theme;
     struct wl_cursor *default_cursor;
-    struct wl_seat *seat;
+    struct wl_pointer *pointer;
     struct wl_shell *shell;
 
     struct {
