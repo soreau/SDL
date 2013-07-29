@@ -391,8 +391,12 @@ Wayland_ShowCursor(SDL_Cursor *cursor)
 static void
 Wayland_WarpMouse(SDL_Window *window, int x, int y)
 {
-    SDL_Unsupported();
-    return;
+    SDL_VideoDevice *vd = SDL_GetVideoDevice();
+    SDL_WaylandData *d = vd->driverdata;
+
+    struct wl_pointer *pointer = d->pointer;
+
+    wl_pointer_warp(pointer, x, y);
 }
 
 static int
