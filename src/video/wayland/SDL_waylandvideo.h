@@ -55,6 +55,8 @@ typedef struct {
         int32_t x, y, width, height;
     } screen_allocation;
 
+    struct wl_list modes_list;
+
     EGLDisplay edpy;
     EGLContext context;
     EGLConfig econf;

@@ -40,6 +40,11 @@
 
 #define WAYLANDVID_DRIVER_NAME "wayland"
 
+struct wayland_mode {
+    SDL_DisplayMode mode;
+    struct wl_list link;
+};
+
 /* Initialization/Query functions */
 static int
 Wayland_VideoInit(_THIS);
@@ -114,6 +119,27 @@ VideoBootStrap Wayland_bootstrap = {
 };
 
 static void
+wayland_add_mode(SDL_WaylandData *d, SDL_DisplayMode m)
+{
+    struct wayland_mode *mode;
+
+    /* Check for duplicate mode */
+    wl_list_for_each(mode, &d->modes_list, link)
+        if (mode->mode.w == m.w && mode->mode.h == m.h &&
+	    mode->mode.refresh_rate == m.refresh_rate)
+	    return;
+
+    /* Add new mode to the list */
+    mode = calloc(1, sizeof *mode);
+
+    if (!mode)
+	return;
+
+    mode->mode = m;
+    wl_list_insert(&d->modes_list, &mode->link);
+}
+
+static void
 display_handle_geometry(void *data,
                         struct wl_output *output,
                         int x, int y,
@@ -140,6 +166,13 @@ display_handle_mode(void *data,
                     int refresh)
 {
     SDL_WaylandData *d = data;
+    SDL_DisplayMode mode;
+
+    mode.w = width;
+    mode.h = height;
+    mode.refresh_rate = refresh / 1000;
+
+    wayland_add_mode(d, mode);
 
     if (flags & WL_OUTPUT_MODE_CURRENT) {
         d->screen_allocation.width = width;
@@ -237,6 +270,8 @@ Wayland_VideoInit(_THIS)
         return 0;
     }
 
+    wl_list_init(&data->modes_list);
+
     data->registry = wl_display_get_registry(data->display);
     wl_registry_add_listener(data->registry, &registry_listener, data);
 
@@ -258,6 +293,7 @@ Wayland_VideoInit(_THIS)
     mode.h = data->screen_allocation.height;
     mode.refresh_rate = 0;
     mode.driverdata = NULL;
+    wayland_add_mode(data, mode);
     SDL_zero(display);
     display.desktop_mode = mode;
     display.current_mode = mode;
@@ -276,8 +312,16 @@ Wayland_GetDisplayModes(_THIS, SDL_VideoDisplay *sdl_display)
 {
     SDL_WaylandData *data = _this->driverdata;
     SDL_DisplayMode mode;
+    struct wayland_mode *m;
 
     Wayland_PumpEvents(_this);
+
+    wl_list_for_each(m, &data->modes_list, link) {
+        m->mode.format = SDL_PIXELFORMAT_RGB888;
+        SDL_AddDisplayMode(sdl_display, &m->mode);
+        m->mode.format = SDL_PIXELFORMAT_RGBA8888;
+        SDL_AddDisplayMode(sdl_display, &m->mode);
+    }
 
     mode.w = data->screen_allocation.width;
     mode.h = data->screen_allocation.height;
@@ -300,6 +344,7 @@ void
 Wayland_VideoQuit(_THIS)
 {
     SDL_WaylandData *data = _this->driverdata;
+    struct wayland_mode *t, *m;
 
     Wayland_FiniMouse ();
 
@@ -336,6 +381,11 @@ Wayland_VideoQuit(_THIS)
     if (data->display) {
         wl_display_flush(data->display);
         wl_display_disconnect(data->display);
+    }
+
+    wl_list_for_each_safe(m, t, &data->modes_list, link) {
+	wl_list_remove(&m->link);
+	free(m);
     }
 
     free(data);
