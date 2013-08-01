@@ -61,8 +61,14 @@ Wayland_VideoQuit(_THIS);
 static int
 Wayland_Available(void)
 {
-    const char *envr = SDL_getenv("SDL_VIDEODRIVER");
-    return envr && SDL_strcmp(envr, WAYLANDVID_DRIVER_NAME) == 0;
+    struct wl_display *display = NULL;
+
+    display = wl_display_connect(NULL);
+    if (display != NULL) {
+        wl_display_disconnect(display);
+    }
+
+    return (display != NULL);
 }
 
 static void
